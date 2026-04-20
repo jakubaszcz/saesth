@@ -1,11 +1,8 @@
 import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
+import { SoundData } from "./interface/sound-data.ts";
 import "./App.css";
-
-interface SoundData {
-  play: boolean;
-  path: string;
-}
+import {SoundCard} from "./component/sound-card.tsx";
 
 type SoundMap = Record<string, SoundData>;
 
@@ -36,15 +33,13 @@ function App() {
   return (
     <main className="container">
       <div className="row">
-        <h3>Available songs :</h3>
-        <ul style={{ textAlign: 'left' }}>
-          {Object.entries(sounds).map(([id, data]) => (
-            <li key={id}>
-              <strong>{id}</strong>: {data.path} {data.play ? " (Playing)" : " (Stop)"}
-              <button onClick={() => handleTogglePlay(id)}>Play</button>
-            </li>
-          ))}
-        </ul>
+        {Object.entries(sounds).map(([id, data]) => (
+            <SoundCard
+                id={id}
+                data={data}
+                onClick={() => handleTogglePlay(id)}
+            />
+        ))}
       </div>
     </main>
   );

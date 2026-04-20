@@ -25,6 +25,14 @@ fn init_sounds() {
 fn get_sounds() -> SoundMap {
     SOUND_MAP.get().unwrap().lock().unwrap().clone()
 }
+#[tauri::command]
+fn toggle_play(id: String) {
+    let mut map = SOUND_MAP.get().unwrap().lock().unwrap();
+    if let Some(sound) = map.get_mut(&id) {
+        sound.play = !sound.play;
+        println!("{:?}", sound.play);
+    }
+}
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -35,6 +43,7 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
             get_sounds,
+            toggle_play,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

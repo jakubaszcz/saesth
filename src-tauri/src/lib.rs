@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::sync::{Mutex, OnceLock};
 
 #[derive(Clone, serde::Serialize, serde::Deserialize)]
 pub struct SoundData {
@@ -8,21 +9,27 @@ pub struct SoundData {
 
 pub type SoundMap = HashMap<String, SoundData>;
 
+static SOUND_MAP: OnceLock<Mutex<SoundMap>> = OnceLock::new();
+
+fn init_sounds() {
+    let mut map = SoundMap::new();
+    map.insert("rain".to_string(), SoundData {
+        play: false,
+        path: "assets/sounds/rain.mp3".to_string(),
+    });
+
+    SOUND_MAP.get_or_init(|| Mutex::new(map));
+}
+
 #[tauri::command]
 fn get_sounds() -> SoundMap {
-    let mut map = SoundMap::new();
-    map.insert(
-        "rain".to_string(),
-        SoundData {
-            play: false,
-            path: "assets/sounds/rain.mp3".to_string(),
-        },
-    );
-    map
+    SOUND_MAP.get().unwrap().lock().unwrap().clone()
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+
+    init_sounds();
 
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())

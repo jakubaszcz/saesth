@@ -3,6 +3,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { SoundData } from "./interface/sound-data.ts";
 import "./App.css";
 import {SoundCard} from "./component/Sound-card.tsx";
+import {Header} from "./component/Header.tsx";
 
 
 function App() {
@@ -39,22 +40,26 @@ function App() {
   }
 
   return (
-    <main className="
-    h-screen w-screen
-    overflow-y-auto
-    bg-linear-to-r from-[var(--background-700)] to-[var(--background-900)] p-8">
-      <div className="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-8">
-        {sounds.map((data) => (
-            <SoundCard
-                key={data.id}
-                id={data.id}
-                data={data}
-                onClick={() => handleTogglePlay(data.id)}
-                onChanged={(volume) => handleVolumeChange(data.id, volume)}
-            />
-        ))}
-      </div>
-    </main>
+    <div className="flex flex-col h-screen w-screen overflow-hidden">
+      <Header />
+      <main className="
+      flex-1
+      overflow-y-auto
+      bg-linear-to-r from-[var(--background-700)] to-[var(--background-900)] p-8 pt-4
+      flex items-center justify-center">
+        <div className="max-w-4xl w-full grid grid-cols-1 sm:grid-cols-2 gap-8">
+          {sounds.map((data) => (
+              <SoundCard
+                  key={data.id}
+                  id={data.id}
+                  data={data}
+                  onClick={() => handleTogglePlay(data.id)}
+                  onChanged={(volume) => handleVolumeChange(data.id, volume)}
+              />
+          ))}
+        </div>
+      </main>
+    </div>
   );
 }
 

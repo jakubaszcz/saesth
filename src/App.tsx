@@ -4,15 +4,14 @@ import { SoundData } from "./interface/sound-data.ts";
 import "./App.css";
 import {SoundCard} from "./component/sound-card.tsx";
 
-type SoundMap = Record<string, SoundData>;
 
 function App() {
-  const [sounds, setSounds] = useState<SoundMap>({});
+  const [sounds, setSounds] = useState<SoundData[]>([]);
 
   useEffect(() => {
     async function fetchSounds() {
       try {
-        const fetchedSounds = await invoke<SoundMap>("get_sounds");
+        const fetchedSounds = await invoke<SoundData[]>("get_sounds");
         setSounds(fetchedSounds);
       } catch (error) {
         console.error("Failed loading songs :", error);
@@ -23,7 +22,7 @@ function App() {
 
   const handleTogglePlay = async (id: string) => {
     try {
-      const updatedSounds = await invoke<SoundMap>("toggle_play", { id });
+      const updatedSounds = await invoke<SoundData[]>("toggle_play", { id });
       setSounds(   updatedSounds);
     } catch (error) {
       console.error("Failed to toggle play:", error);
@@ -32,7 +31,7 @@ function App() {
 
   const handleVolumeChange = async (id: string, volume: number) => {
     try {
-      const updatedSounds = await invoke<SoundMap>("change_volume", { id, volume });
+      const updatedSounds = await invoke<SoundData[]>("change_volume", { id, volume });
       setSounds(updatedSounds);
     } catch (error) {
       console.error("Failed to change volume:", error);
@@ -42,12 +41,13 @@ function App() {
   return (
     <main className="container">
       <div className="row">
-        {Object.entries(sounds).map(([id, data]) => (
+        {sounds.map((data) => (
             <SoundCard
-                id={id}
+                key={data.id}
+                id={data.id}
                 data={data}
-                onClick={() => handleTogglePlay(id)}
-                onChanged={(volume) => handleVolumeChange(id, volume)}
+                onClick={() => handleTogglePlay(data.id)}
+                onChanged={(volume) => handleVolumeChange(data.id, volume)}
             />
         ))}
       </div>

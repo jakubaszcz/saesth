@@ -1,10 +1,10 @@
-use std::collections::HashMap;
 use std::fs::File;
 use std::sync::{Mutex, OnceLock};
 use rodio::{Decoder, DeviceSinkBuilder, MixerDeviceSink, Source};
 
 #[derive(Clone, serde::Serialize, serde::Deserialize)]
 pub struct SoundData {
+    pub id: String,
     pub play: bool,
     pub path: String,
     pub volume: f32
@@ -15,54 +15,56 @@ pub struct SoundStream {
     pub data: SoundData
 }
 
-pub type SoundMap = HashMap<String, SoundStream>;
+pub type SoundList = Vec<SoundStream>;
 
-static SOUND_MAP: OnceLock<Mutex<SoundMap>> = OnceLock::new();
+static SOUND_LIST: OnceLock<Mutex<SoundList>> = OnceLock::new();
 fn init_sounds() {
-    let mut map = SoundMap::new();
-    map.insert("rain".to_string(), SoundStream {
+    let mut list = Vec::new();
+    list.push(SoundStream {
         handle: None,
         data: SoundData {
+            id: "rain".to_string(),
             play: false,
             volume: 0.5,
             path: "sounds/rain.mp3".to_string(),
         }
     });
-    map.insert("thunder".to_string(), SoundStream {
+    list.push(SoundStream {
         handle: None,
         data: SoundData {
+            id: "thunder".to_string(),
             play: false,
             volume: 0.5,
             path: "sounds/thunder.mp3".to_string(),
         }
     });
 
-    SOUND_MAP.get_or_init(|| Mutex::new(map));
+    SOUND_LIST.get_or_init(|| Mutex::new(list));
 }
 
 #[tauri::command]
-fn get_sounds() -> HashMap<String, SoundData> {
-    let map = SOUND_MAP.get().unwrap().lock().unwrap();
-    map.iter().map(|(k, v)| (k.clone(), v.data.clone())).collect()
+fn get_sounds() -> Vec<SoundData> {
+    let list = SOUND_LIST.get().unwrap().lock().unwrap();
+    list.iter().map(|v| v.data.clone()).collect()
 }
 
 #[tauri::command]
-fn change_volume(id: String, volume: f32) -> HashMap<String, SoundData> {
-    let mut map = SOUND_MAP.get().unwrap().lock().unwrap();
+fn change_volume(id: String, volume: f32) -> Vec<SoundData> {
+    let mut list = SOUND_LIST.get().unwrap().lock().unwrap();
 
-    if let Some(sound) = map.get_mut(&id) {
+    if let Some(sound) = list.iter_mut().find(|s| s.data.id == id) {
         sound.data.volume = volume;
     }
-    map.iter()
-        .map(|(k, v)| (k.clone(), v.data.clone()))
+    list.iter()
+        .map(|v| v.data.clone())
         .collect()
 }
 
 #[tauri::command]
-fn toggle_play(id: String) -> HashMap<String, SoundData> {
-    let mut map = SOUND_MAP.get().unwrap().lock().unwrap();
+fn toggle_play(id: String) -> Vec<SoundData> {
+    let mut list = SOUND_LIST.get().unwrap().lock().unwrap();
 
-    if let Some(sound) = map.get_mut(&id) {
+    if let Some(sound) = list.iter_mut().find(|s| s.data.id == id) {
         if sound.data.play {
             if let Some(handle) = sound.handle.take() {
                 drop(handle);
@@ -87,8 +89,8 @@ fn toggle_play(id: String) -> HashMap<String, SoundData> {
         }
     }
 
-    map.iter()
-        .map(|(k, v)| (k.clone(), v.data.clone()))
+    list.iter()
+        .map(|v| v.data.clone())
         .collect()
 }
 

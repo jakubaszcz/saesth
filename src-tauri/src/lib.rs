@@ -1,6 +1,7 @@
 use std::fs::File;
 use std::sync::{Mutex, OnceLock};
 use rodio::{Decoder, DeviceSinkBuilder, MixerDeviceSink, Source};
+use tauri::Manager;
 
 #[derive(Clone, serde::Serialize, serde::Deserialize)]
 pub struct SoundData {
@@ -100,6 +101,33 @@ pub fn run() {
     init_sounds();
 
     tauri::Builder::default()
+        .setup(|app| {
+            let window = app.get_window("main").unwrap();
+
+            // Focus on opening
+            window.set_focus().unwrap();
+
+            // Hide the window title bar
+            window.set_decorations(false).unwrap();
+
+            // Window position
+            {
+                let window_size = window.outer_size().unwrap();
+
+                let current_screen = window.current_monitor().unwrap().unwrap();
+                let screen_size = current_screen.size();
+
+                let position_x = (screen_size.width - window_size.width) / 2;
+                let position_y = (screen_size.height - window_size.height) / 2;
+
+                window.set_position(tauri::Position::Physical(tauri::PhysicalPosition {
+                    x: position_x as i32,
+                    y: position_y as i32,
+                })).unwrap();
+            }
+
+            Ok(())
+        })
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
             get_sounds,

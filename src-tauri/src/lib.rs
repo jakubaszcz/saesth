@@ -27,16 +27,34 @@ fn init_sounds() {
             id: "rain".to_string(),
             play: false,
             volume: 0.5,
-            path: "sounds/rain.mp3".to_string(),
+            path: "sounds/rain.wav".to_string(),
         }
     });
     list.push(SoundStream {
         handle: None,
         data: SoundData {
-            id: "thunder".to_string(),
+            id: "fire".to_string(),
             play: false,
             volume: 0.5,
-            path: "sounds/thunder.mp3".to_string(),
+            path: "sounds/fire.mp3".to_string(),
+        }
+    });
+    list.push(SoundStream {
+        handle: None,
+        data: SoundData {
+            id: "bird".to_string(),
+            play: false,
+            volume: 0.5,
+            path: "sounds/bird.mp3".to_string(),
+        }
+    });
+    list.push(SoundStream {
+        handle: None,
+        data: SoundData {
+            id: "wind".to_string(),
+            play: false,
+            volume: 0.5,
+            path: "sounds/wind.mp3".to_string(),
         }
     });
 

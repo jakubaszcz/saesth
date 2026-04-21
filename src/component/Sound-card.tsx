@@ -1,5 +1,5 @@
 import { SoundData } from "../interface/sound-data.ts";
-import { CloudRainWind, CirclePlay, CirclePauseIcon, CloudLightning, Wind, Volume2 } from "lucide-react"
+import { CloudRainWind, CirclePlay, CirclePauseIcon, FlameIcon, Bird, Wind, Volume2 } from "lucide-react"
 
 
 interface SoundCardProps {
@@ -12,7 +12,8 @@ interface SoundCardProps {
 const getIcon = (id: string) => {
     const nid = id.toLowerCase();
     if (nid.includes("rain")) return <CloudRainWind className="w-8 h-8 mb-2" />;
-    if (nid.includes("thunder")) return <CloudLightning className="w-8 h-8 mb-2" />;
+    if (nid.includes("fire")) return <FlameIcon className="w-8 h-8 mb-2" />;
+    if (nid.includes("bird")) return <Bird className="w-8 h-8 mb-2" />;
     if (nid.includes("wind")) return <Wind className="w-8 h-8 mb-2" />;
     return <Volume2 className="w-8 h-8 mb-2" />;
 }

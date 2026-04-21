@@ -18,24 +18,24 @@
   --background-950: #101211;
 
   /* =========================
-     NATURE
+     BIRD
      Primary base: #9AE19D
      Secondary base: #537A5A
   ========================== */
-  --nature-50:  #f3fcf4;
-  --nature-100: #e3f8e5;
-  --nature-200: #c6f0ca;
-  --nature-300: #9AE19D;
-  --nature-400: #78cb7c;
-  --nature-500: #5db462;
-  --nature-600: #46924b;
-  --nature-700: #35713a;
-  --nature-800: #28562c;
-  --nature-900: #1b3a1e;
-  --nature-950: #0d1f10;
+  --bird-50:  #f3fcf4;
+  --bird-100: #e3f8e5;
+  --bird-200: #c6f0ca;
+  --bird-300: #9AE19D;
+  --bird-400: #78cb7c;
+  --bird-500: #5db462;
+  --bird-600: #46924b;
+  --bird-700: #35713a;
+  --bird-800: #28562c;
+  --bird-900: #1b3a1e;
+  --bird-950: #0d1f10;
 
-  --nature-primary: #9AE19D;
-  --nature-secondary: #537A5A;
+  --bird-primary: #9AE19D;
+  --bird-secondary: #537A5A;
 
   /* =========================
      RAIN
@@ -74,4 +74,42 @@
 
   --thunder-primary: #ae72ff;
   --thunder-secondary: #5e289f;
+
+  /* =========================
+   FIRE
+   Red / orange ember energy
+========================== */
+  --fire-50:  #fff6f1;
+  --fire-100: #ffe8db;
+  --fire-200: #ffd0b3;
+  --fire-300: #ffae7a;
+  --fire-400: #ff8647;
+  --fire-500: #ff5f1f;
+  --fire-600: #e24312;
+  --fire-700: #b93212;
+  --fire-800: #8d2613;
+  --fire-900: #611a11;
+  --fire-950: #330c08;
+
+  --fire-primary: #ff8647;
+  --fire-secondary: #b93212;
+
+  /* =========================
+   WIND
+   Silver / white / soft gold air energy
+========================== */
+  --wind-50:  #fffdf8;
+  --wind-100: #faf7ef;
+  --wind-200: #f1ebdb;
+  --wind-300: #e4dcc7;
+  --wind-400: #d4c9ae;
+  --wind-500: #c1b595;
+  --wind-600: #a69777;
+  --wind-700: #85795f;
+  --wind-800: #655b47;
+  --wind-900: #474033;
+  --wind-950: #25211a;
+
+  --wind-primary: #e4dcc7;
+  --wind-secondary: #85795f;
 }

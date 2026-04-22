@@ -35,6 +35,11 @@ pub fn init_db() {
         )
         ",[]).unwrap();
 
+    conn.execute("CREATE TABLE IF NOT EXISTS settings (
+            id TEXT PRIMARY KEY,
+            value TEXT
+        )", []).unwrap();
+
     DATABASE.set(Mutex::new(conn)).unwrap();
 }
 

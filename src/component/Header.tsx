@@ -1,6 +1,9 @@
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { X, Minimize } from "lucide-react";
-
+import logo from "../assets/saesth.svg";
+export default function Logo({ size = 32 }) {
+  return <img src={logo} width={size} height={size} />;
+}
 export const Header = () => {
   const appWindow = getCurrentWindow();
 
@@ -23,13 +26,21 @@ export const Header = () => {
     }
   };
 
+
+
   return (
     <header 
       data-tauri-drag-region 
       className="flex items-center justify-between px-6 py-2 bg-linear-to-r from-[var(--background-700)] to-[var(--background-900)] text-white select-none h-14 border-b border-white/5 cursor-default"
     >
-      <div className="font-bold text-xl tracking-wider pointer-events-none opacity-80 select-none">
-        Saesth
+      <div className="flex items-center gap-3">
+        <div className="opacity-80">
+          <Logo />
+        </div>
+
+        <div className="font-bold text-xl tracking-wider pointer-events-none opacity-80 select-none">
+          Saesth
+        </div>
       </div>
 
       <div className="flex items-end relative z-10">

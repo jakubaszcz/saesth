@@ -3,8 +3,11 @@ use std::io::Repeat;
 use std::sync::{Mutex, OnceLock};
 use rodio::{Decoder, DeviceSinkBuilder, MixerDeviceSink, Player, Source};
 use tauri::async_runtime::handle;
-use tauri::Manager;
+use tauri::{menu::{Menu, MenuItem}, tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent}, utils as other_utils, App, AppHandle, Emitter, Manager};
+use tauri::image::Image;
+use crate::utils::init_tray::init_tray;
 
+mod utils;
 #[derive(Clone, serde::Serialize, serde::Deserialize)]
 pub struct SoundData {
     pub id: String,
@@ -22,6 +25,8 @@ pub struct SoundStream {
 pub type SoundList = Vec<SoundStream>;
 
 static SOUND_LIST: OnceLock<Mutex<SoundList>> = OnceLock::new();
+
+
 fn init_sounds() {
     let mut list = Vec::new();
     list.push(SoundStream {
@@ -137,6 +142,10 @@ pub fn run() {
     tauri::Builder::default()
         .setup(|app| {
             let window = app.get_window("main").unwrap();
+            let handle = app.handle().clone();
+
+            // Tray
+            init_tray(app);
 
             // Focus on opening
             window.set_focus().unwrap();
@@ -161,6 +170,12 @@ pub fn run() {
             }
 
             Ok(())
+        })
+        .on_window_event(|window, event| {
+            if let tauri::WindowEvent::CloseRequested { api, .. } = event {
+                api.prevent_close();
+                window.hide().unwrap();
+            }
         })
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![

@@ -7,6 +7,7 @@ use tauri::{menu::{Menu, MenuItem}, tray::{MouseButton, MouseButtonState, TrayIc
 use tauri::image::Image;
 use crate::utils::init_tray::init_tray;
 
+mod database;
 mod utils;
 #[derive(Clone, serde::Serialize, serde::Deserialize)]
 pub struct SoundData {
@@ -35,7 +36,7 @@ fn init_sounds() {
         data: SoundData {
             id: "rain".to_string(),
             play: false,
-            volume: 0.5,
+            volume: database::database::get_volume("rain"),
             path: "sounds/rain.wav".to_string(),
         }
     });
@@ -45,7 +46,7 @@ fn init_sounds() {
         data: SoundData {
             id: "fire".to_string(),
             play: false,
-            volume: 0.5,
+            volume: database::database::get_volume("fire"),
             path: "sounds/fire.mp3".to_string(),
         }
     });
@@ -55,7 +56,7 @@ fn init_sounds() {
         data: SoundData {
             id: "bird".to_string(),
             play: false,
-            volume: 0.5,
+            volume: database::database::get_volume("bird"),
             path: "sounds/bird.mp3".to_string(),
         }
     });
@@ -65,7 +66,7 @@ fn init_sounds() {
         data: SoundData {
             id: "wind".to_string(),
             play: false,
-            volume: 0.5,
+            volume: database::database::get_volume("wind"),
             path: "sounds/wind.mp3".to_string(),
         }
     });
@@ -85,6 +86,7 @@ fn change_volume(id: String, volume: f32) -> Vec<SoundData> {
 
     if let Some(sound) = list.iter_mut().find(|s| s.data.id == id) {
         sound.data.volume = volume;
+        database::database::set_volume(&id, volume);
         if let Some(player) = &sound.player {
             player.set_volume(volume);
         }
@@ -136,6 +138,13 @@ fn toggle_play(id: String) -> Vec<SoundData> {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+
+    database::database::init_db();
+
+    let defaults = ["rain", "wind", "bird", "fire"];
+    for default in defaults {
+        database::database::create_if_missing(default);
+    }
 
     init_sounds();
 

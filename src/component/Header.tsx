@@ -1,7 +1,7 @@
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { X, Minimize } from "lucide-react";
 import logo from "../assets/saesth.svg";
-export default function Logo({ size = 32 }) {
+function Logo({ size = 32 }) {
   return <img src={logo} width={size} height={size} />;
 }
 export const Header = () => {

@@ -115,12 +115,18 @@
 
   /* Close button */
 
-  --close-primary: #b93212;
-  --close-secondary: #611a11;
+  --close-primary: #ffd0b3;
+  --close-secondary: #ff5f1f;
 
   /* Minimize button */
 
-  --minimize-primary: #7834ca;
-  --minimize-secondary: #2f1350;
+  --minimize-primary: #ddc2ff;
+  --minimize-secondary: #954af0;
+
+  --setting-primary: #f1ebdb;
+  --setting-secondary: #c1b595;
+
+  --home-primary: #bddcff;
+  --home-secondary: #3f95f2;
 
 }

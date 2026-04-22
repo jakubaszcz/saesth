@@ -1,10 +1,18 @@
-import { getCurrentWindow } from "@tauri-apps/api/window";
-import { X, Minimize } from "lucide-react";
+import {getCurrentWindow} from "@tauri-apps/api/window";
+import {BoltIcon, Minimize, X, LucideWarehouse} from "lucide-react";
 import logo from "../assets/saesth.svg";
+import {Pages} from "../pages/pages.ts";
+
 function Logo({ size = 32 }) {
   return <img src={logo} width={size} height={size} />;
 }
-export const Header = () => {
+
+type Props = {
+  tab: Pages;
+  setTab: React.Dispatch<React.SetStateAction<Pages>>;
+};
+
+export const Header = ({ tab, setTab }: Props) => {
   const appWindow = getCurrentWindow();
 
   const handleClose = async () => {
@@ -44,6 +52,24 @@ export const Header = () => {
       </div>
 
       <div className="flex items-end relative z-10">
+        { tab === Pages.HOME && (
+            <button
+                onClick={() => setTab(Pages.SETTINGS)}
+                className="hover:bg-[var(--setting-secondary)] hover:text-[var(--setting-primary)] rounded-full p-1.5 transition-all cursor-pointer group"
+                aria-label="Minimize"
+            >
+              <BoltIcon size={20} className="group-hover:scale-110 transition-transform" />
+            </button>
+        )}
+        { tab === Pages.SETTINGS && (
+            <button
+                onClick={() => setTab(Pages.HOME)}
+                className="hover:bg-[var(--home-secondary)] hover:text-[var(--home-primary)] rounded-full p-1.5 transition-all cursor-pointer group"
+                aria-label="Minimize"
+            >
+              <LucideWarehouse size={20} className="group-hover:scale-110 transition-transform" />
+            </button>
+        )}
         <button
             onClick={handleMinimize}
             className="hover:bg-[var(--minimize-secondary)] hover:text-[var(--minimize-primary)] rounded-full p-1.5 transition-all cursor-pointer group"

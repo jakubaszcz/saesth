@@ -25,7 +25,7 @@ fn init_sounds() {
             id: "rain".to_string(),
             play: false,
             volume: database::database::get_volume("rain"),
-            path: "sounds/rain.wav".to_string(),
+            path: "sounds/rain".to_string(),
         }
     });
     list.push(utils::sound_stream::SoundStream {
@@ -36,29 +36,7 @@ fn init_sounds() {
             id: "fire".to_string(),
             play: false,
             volume: database::database::get_volume("fire"),
-            path: "sounds/fire.mp3".to_string(),
-        }
-    });
-    list.push(utils::sound_stream::SoundStream {
-        handle: None,
-        player: None,
-        play: Arc::new(AtomicBool::new(false)),
-        data: utils::sound_stream::SoundData {
-            id: "bird".to_string(),
-            play: false,
-            volume: database::database::get_volume("bird"),
-            path: "sounds/bird.mp3".to_string(),
-        }
-    });
-    list.push(utils::sound_stream::SoundStream {
-        handle: None,
-        player: None,
-        play: Arc::new(AtomicBool::new(false)),
-        data: utils::sound_stream::SoundData {
-            id: "wind".to_string(),
-            play: false,
-            volume: database::database::get_volume("wind"),
-            path: "sounds/wind.mp3".to_string(),
+            path: "sounds/fire".to_string(),
         }
     });
 
@@ -106,7 +84,7 @@ fn toggle_play(id: String) -> Vec<utils::sound_stream::SoundData> {
         if sound.data.play {
             sounds::sound_handler::stop_sound(sound);
         } else {
-            sounds::sound_handler::play_sound(sound);
+            sounds::sound_handler::play_sound(&id, sound);
         }
     }
 
@@ -120,7 +98,7 @@ pub fn run() {
 
     database::database::init_db();
 
-    let defaults = ["rain", "wind", "bird", "fire"];
+    let defaults = ["rain", "fire"];
     for default in defaults {
         database::database::create_if_missing(default);
     }

@@ -4,13 +4,15 @@ use std::sync::atomic::Ordering;
 use std::thread;
 use std::time::Duration;
 use rodio::{Decoder, DeviceSinkBuilder, Player, Source};
+use crate::sounds::drift::sound_drift::song_drift;
 use crate::utils::sound_stream::SoundStream;
-
-const FADE_STEPS: u64 = 5;
+pub(crate) const FADE_STEPS: u64 = 5;
 const FADE_DURATION_MS: u64 = 1500;
 
-pub fn play_sound(sound: &mut SoundStream) {
+pub fn play_sound(id: &str, sound: &mut SoundStream) {
     sound.play.store(true, Ordering::Relaxed);
+
+    let path = format!("{}/{}.mp3", sound.data.path, "default");
 
     let handle = DeviceSinkBuilder::open_default_sink()
         .expect("failed to open default audio device");
@@ -19,7 +21,7 @@ pub fn play_sound(sound: &mut SoundStream) {
         Player::connect_new(&handle.mixer())
     ));
 
-    let file = File::open(&sound.data.path)
+    let file = File::open(&path)
         .expect("failed to open audio file");
     let source = Decoder::try_from(file)
         .expect("failed to decode audio file")
@@ -32,7 +34,6 @@ pub fn play_sound(sound: &mut SoundStream) {
     let target_volume = sound.data.volume;
     let clone_player = player.clone();
     let play_flag = sound.play.clone();
-
 
     thread::spawn(move || {
         let steps = FADE_DURATION_MS / FADE_STEPS;
@@ -59,9 +60,9 @@ pub fn play_sound(sound: &mut SoundStream) {
     sound.player = Some(player);
     sound.handle = Some(handle);
     sound.data.play = true;
+
+    song_drift(sound);
 }
-
-
 pub fn stop_sound(sound: &mut SoundStream) {
     sound.play.store(false, Ordering::Relaxed);
 
@@ -101,5 +102,4 @@ pub fn stop_sound(sound: &mut SoundStream) {
         drop(player);
         drop(handle);
     });
-
 }

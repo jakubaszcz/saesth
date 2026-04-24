@@ -20,7 +20,7 @@ const getIcon = (id: string) => {
 
     if (nid.includes("rain")) return <CloudRainWind size={24} />;
     if (nid.includes("fire")) return <FlameIcon size={24} />;
-    if (nid.includes("bird")) return <Bird size={24} />;
+    if (nid.includes("fire")) return <Bird size={24} />;
     if (nid.includes("wind")) return <Wind size={24} />;
 
     return <Volume2 size={24} />;

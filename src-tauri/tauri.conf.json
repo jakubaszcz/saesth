@@ -32,7 +32,8 @@
       "icons/icon.icns"
     ],
     "resources": [
-      "sounds/*"
+      "sounds/rain/*",
+      "sounds/fire/*"
     ]
   }
 }

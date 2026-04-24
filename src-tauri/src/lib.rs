@@ -9,61 +9,47 @@ use crate::utils::init_tray::init_tray;
 
 mod database;
 mod utils;
-#[derive(Clone, serde::Serialize, serde::Deserialize)]
-pub struct SoundData {
-    pub id: String,
-    pub play: bool,
-    pub path: String,
-    pub volume: f32
-}
+mod sounds;
 
-pub struct SoundStream {
-    pub handle: Option<MixerDeviceSink>,
-    pub player: Option<Player>,
-    pub data: SoundData
-}
-
-pub type SoundList = Vec<SoundStream>;
-
-static SOUND_LIST: OnceLock<Mutex<SoundList>> = OnceLock::new();
+static SOUND_LIST: OnceLock<Mutex<utils::sound_stream::SoundList>> = OnceLock::new();
 
 
 fn init_sounds() {
     let mut list = Vec::new();
-    list.push(SoundStream {
+    list.push(utils::sound_stream::SoundStream {
         handle: None,
         player: None,
-        data: SoundData {
+        data: utils::sound_stream::SoundData {
             id: "rain".to_string(),
             play: false,
             volume: database::database::get_volume("rain"),
             path: "sounds/rain.wav".to_string(),
         }
     });
-    list.push(SoundStream {
+    list.push(utils::sound_stream::SoundStream {
         handle: None,
         player: None,
-        data: SoundData {
+        data: utils::sound_stream::SoundData {
             id: "fire".to_string(),
             play: false,
             volume: database::database::get_volume("fire"),
             path: "sounds/fire.mp3".to_string(),
         }
     });
-    list.push(SoundStream {
+    list.push(utils::sound_stream::SoundStream {
         handle: None,
         player: None,
-        data: SoundData {
+        data: utils::sound_stream::SoundData {
             id: "bird".to_string(),
             play: false,
             volume: database::database::get_volume("bird"),
             path: "sounds/bird.mp3".to_string(),
         }
     });
-    list.push(SoundStream {
+    list.push(utils::sound_stream::SoundStream {
         handle: None,
         player: None,
-        data: SoundData {
+        data: utils::sound_stream::SoundData {
             id: "wind".to_string(),
             play: false,
             volume: database::database::get_volume("wind"),
@@ -76,13 +62,13 @@ fn init_sounds() {
 }
 
 #[tauri::command]
-fn get_sounds() -> Vec<SoundData> {
+fn get_sounds() -> Vec<utils::sound_stream::SoundData> {
     let list = SOUND_LIST.get().unwrap().lock().unwrap();
     list.iter().map(|v| v.data.clone()).collect()
 }
 
 #[tauri::command]
-fn change_volume(id: String, volume: f32) -> Vec<SoundData> {
+fn change_volume(id: String, volume: f32) -> Vec<utils::sound_stream::SoundData> {
     let mut list = SOUND_LIST.get().unwrap().lock().unwrap();
 
     if let Some(sound) = list.iter_mut().find(|s| s.data.id == id) {
@@ -108,37 +94,14 @@ fn get_settings(id: String) -> String {
 }
 
 #[tauri::command]
-fn toggle_play(id: String) -> Vec<SoundData> {
+fn toggle_play(id: String) -> Vec<utils::sound_stream::SoundData> {
     let mut list = SOUND_LIST.get().unwrap().lock().unwrap();
 
     if let Some(sound) = list.iter_mut().find(|s| s.data.id == id) {
         if sound.data.play {
-            if let Some(player) = sound.player.take() {
-                drop(player);
-            }
-            if let Some(handle) = sound.handle.take() {
-                drop(handle);
-            }
-            sound.data.play = false;
+            sounds::sound_handler::stop_sound(sound);
         } else {
-            let handle = DeviceSinkBuilder::open_default_sink()
-                .expect("failed to open default audio device");
-
-            let player = Player::connect_new(&handle.mixer());
-
-            let file = File::open(&sound.data.path)
-                .expect("failed to open audio file");
-
-            let source = Decoder::try_from(file)
-                .expect("failed to decode audio file")
-                .repeat_infinite();
-
-            player.append(source);
-            player.set_volume(sound.data.volume);
-
-            sound.player = Some(player);
-            sound.handle = Some(handle);
-            sound.data.play = true;
+            sounds::sound_handler::play_sound(sound);
         }
     }
 

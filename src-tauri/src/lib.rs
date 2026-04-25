@@ -7,6 +7,7 @@ use tauri::async_runtime::handle;
 use tauri::{menu::{Menu, MenuItem}, tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent}, utils as other_utils, App, AppHandle, Emitter, Manager};
 use tauri::image::Image;
 use crate::utils::init_tray::init_tray;
+use crate::utils::sound_stream::SoundEffect;
 
 mod database;
 mod utils;
@@ -18,6 +19,12 @@ static SOUND_LIST: OnceLock<Mutex<utils::sound_stream::SoundList>> = OnceLock::n
 fn init_sounds() {
     let mut list = Vec::new();
     list.push(utils::sound_stream::SoundStream {
+        effects: vec![
+            SoundEffect {
+                player: None,
+                path: "sounds/rain/thunder".to_string(),
+            }
+        ],
         handle: None,
         player: None,
         play: Arc::new(AtomicBool::new(false)),
@@ -31,20 +38,7 @@ fn init_sounds() {
             path: "sounds/rain".to_string(),
         }
     });
-    list.push(utils::sound_stream::SoundStream {
-        handle: None,
-        player: None,
-        play: Arc::new(AtomicBool::new(false)),
-        volume: Arc::new(Mutex::new(database::database::get_volume("fire"))),
-        fade_volume: Arc::new(Mutex::new(1.0)),
-        drift_volume: Arc::new(Mutex::new(1.0)),
-        data: utils::sound_stream::SoundData {
-            id: "fire".to_string(),
-            play: false,
-            volume: database::database::get_volume("fire"),
-            path: "sounds/fire".to_string(),
-        }
-    });
+
 
 
     SOUND_LIST.get_or_init(|| Mutex::new(list));

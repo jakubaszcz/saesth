@@ -11,6 +11,9 @@ pub struct SoundData {
 }
 
 pub struct SoundStream {
+
+    pub effects: Vec<SoundEffect>,
+
     pub handle: Option<MixerDeviceSink>,
     pub player: Option<Arc<Mutex<Player>>>,
     pub play: Arc<AtomicBool>,
@@ -18,6 +21,12 @@ pub struct SoundStream {
     pub fade_volume: Arc<Mutex<f32>>,
     pub drift_volume: Arc<Mutex<f32>>,
     pub data: SoundData
+}
+
+#[derive(Clone)]
+pub struct SoundEffect {
+    pub player: Option<Arc<Mutex<Player>>>,
+    pub path: String
 }
 
 pub type SoundList = Vec<SoundStream>;

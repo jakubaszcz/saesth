@@ -7,6 +7,8 @@ use rodio::{Decoder, DeviceSinkBuilder, Player, Source};
 use crate::sounds::apply_sound::apply_sound;
 use crate::sounds::drift::sound_drift::song_drift;
 use crate::utils::sound_stream::SoundStream;
+
+use crate::sounds::effects::rain::thunder::thunder;
 pub(crate) const FADE_STEPS: u64 = 5;
 const FADE_DURATION_MS: u64 = 1500;
 
@@ -72,6 +74,8 @@ pub fn play_sound(id: &str, sound: &mut SoundStream) {
     sound.player = Some(player);
     sound.handle = Some(handle);
     sound.data.play = true;
+
+    thunder(sound);
 
     song_drift(sound);
 }

@@ -14,6 +14,9 @@ pub struct SoundStream {
     pub handle: Option<MixerDeviceSink>,
     pub player: Option<Arc<Mutex<Player>>>,
     pub play: Arc<AtomicBool>,
+    pub volume: Arc<Mutex<f32>>,
+    pub fade_volume: Arc<Mutex<f32>>,
+    pub drift_volume: Arc<Mutex<f32>>,
     pub data: SoundData
 }
 

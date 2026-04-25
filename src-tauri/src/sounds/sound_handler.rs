@@ -4,6 +4,7 @@ use std::sync::atomic::Ordering;
 use std::thread;
 use std::time::Duration;
 use rodio::{Decoder, DeviceSinkBuilder, Player, Source};
+use crate::sounds::apply_sound::apply_sound;
 use crate::sounds::drift::sound_drift::song_drift;
 use crate::utils::sound_stream::SoundStream;
 pub(crate) const FADE_STEPS: u64 = 5;
@@ -31,9 +32,16 @@ pub fn play_sound(id: &str, sound: &mut SoundStream) {
     player.lock().unwrap().set_volume(0.0);
     player.lock().unwrap().play();
 
-    let target_volume = sound.data.volume;
+    let fade_volume = sound.fade_volume.clone();
+    let user_volume = sound.volume.clone();
+    let drift_volume = sound.drift_volume.clone();
+
     let clone_player = player.clone();
     let play_flag = sound.play.clone();
+
+    {
+        *fade_volume.lock().unwrap() = 0.0;
+    }
 
     thread::spawn(move || {
         let steps = FADE_DURATION_MS / FADE_STEPS;
@@ -47,11 +55,15 @@ pub fn play_sound(id: &str, sound: &mut SoundStream) {
             let t = step as f32 / steps as f32;
             let eased = t * t;
 
-            let volume = target_volume * eased;
+            *fade_volume.lock().unwrap() = eased;
 
-            if let Ok(player) = clone_player.lock() {
-                player.set_volume(volume);
-            }
+            apply_sound(
+                &clone_player,
+                &user_volume,
+                &fade_volume,
+                &drift_volume
+            );
+
 
             thread::sleep(Duration::from_millis(FADE_STEPS));
         }
@@ -73,7 +85,10 @@ pub fn stop_sound(sound: &mut SoundStream) {
         return
     };
 
-    let start_volume = player.lock().unwrap().volume();
+    let fade_volume = sound.fade_volume.clone();
+    let user_volume = sound.volume.clone();
+    let drift_volume = sound.drift_volume.clone();
+
     let fade_player = player.clone();
     let play_flag = sound.play.clone();
 
@@ -83,7 +98,6 @@ pub fn stop_sound(sound: &mut SoundStream) {
         let steps = FADE_DURATION_MS / FADE_STEPS;
 
         for step in (0..=steps).rev() {
-
             if play_flag.load(Ordering::Relaxed) {
                 return;
             }
@@ -91,14 +105,18 @@ pub fn stop_sound(sound: &mut SoundStream) {
             let t = step as f32 / steps as f32;
             let eased = t * t;
 
-            let volume = start_volume * eased;
+            *fade_volume.lock().unwrap() = eased;
 
-            if let Ok(player) = fade_player.lock() {
-                player.set_volume(volume);
-            }
+            apply_sound(
+                &fade_player,
+                &user_volume,
+                &fade_volume,
+                &drift_volume,
+            );
 
             thread::sleep(Duration::from_millis(FADE_STEPS));
         }
+
         drop(player);
         drop(handle);
     });

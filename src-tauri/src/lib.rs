@@ -21,6 +21,9 @@ fn init_sounds() {
         handle: None,
         player: None,
         play: Arc::new(AtomicBool::new(false)),
+        volume: Arc::new(Mutex::new(database::database::get_volume("rain"))),
+        fade_volume: Arc::new(Mutex::new(1.0)),
+        drift_volume: Arc::new(Mutex::new(1.0)),
         data: utils::sound_stream::SoundData {
             id: "rain".to_string(),
             play: false,
@@ -32,6 +35,9 @@ fn init_sounds() {
         handle: None,
         player: None,
         play: Arc::new(AtomicBool::new(false)),
+        volume: Arc::new(Mutex::new(database::database::get_volume("fire"))),
+        fade_volume: Arc::new(Mutex::new(1.0)),
+        drift_volume: Arc::new(Mutex::new(1.0)),
         data: utils::sound_stream::SoundData {
             id: "fire".to_string(),
             play: false,
@@ -57,8 +63,13 @@ fn change_volume(id: String, volume: f32) -> Vec<utils::sound_stream::SoundData>
     if let Some(sound) = list.iter_mut().find(|s| s.data.id == id) {
         sound.data.volume = volume;
         database::database::set_volume(&id, volume);
+
+        if let Ok(mut flag_volume) = sound.volume.lock() {
+            *flag_volume = volume;
+        }
+
         if let Some(player) = &sound.player {
-            player.lock().unwrap().set_volume(volume);
+            sounds::apply_sound::apply_sound(player, &sound.volume, &sound.fade_volume, &sound.drift_volume);
         }
     }
     list.iter()

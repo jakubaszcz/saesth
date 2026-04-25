@@ -1,6 +1,7 @@
 import {getCurrentWindow} from "@tauri-apps/api/window";
-import {BoltIcon, Minimize, X, House} from "lucide-react";
+import {BoltIcon, X, House, Minus, Maximize2, Minimize2} from "lucide-react";
 import {Pages} from "../pages/pages.ts";
+import {useEffect, useState} from "react";
 
 type Props = {
   tab: Pages;
@@ -11,9 +12,9 @@ export const Header = ({ tab, setTab }: Props) => {
 
   const appWindow = getCurrentWindow();
 
-  const handleClose = async () => {
-    console.log("close")
+  const [isMaximized, setIsMaximized] = useState(false);
 
+  const handleClose = async () => {
     try {
       await appWindow.close();
     } catch (error) {
@@ -22,13 +23,38 @@ export const Header = ({ tab, setTab }: Props) => {
   };
 
   const handleMinimize = async () => {
-    console.log("minimize")
     try {
       await appWindow.minimize();
     } catch (error) {
       console.error("Failed to minimize window:", error);
     }
   };
+
+  const handleMaximize = async () => {
+    const maximized = await appWindow.isMaximized();
+
+    if (maximized) {
+      await appWindow.unmaximize();
+    } else {
+      await appWindow.maximize();
+    }
+  };
+
+  useEffect(() => {
+    const load = async () => {
+      setIsMaximized(await appWindow.isMaximized());
+    };
+
+    load();
+
+    const unlistenPromise = appWindow.onResized(async () => {
+      setIsMaximized(await appWindow.isMaximized());
+    });
+
+    return () => {
+      unlistenPromise.then(unlisten => unlisten());
+    };
+  }, []);
 
   return (
     <header data-tauri-drag-region className="
@@ -62,8 +88,18 @@ drop-shadow-sm
             </button>
         )}
         <button onClick={handleMinimize} aria-label="Minimize">
-          <Minimize size={20} className="transition-all duration-300 ease-out hover:scale-125 hover:text-[var(--primary-600)] cursor-pointer"/>
+          <Minus size={20} className="transition-all duration-300 ease-out hover:scale-125 hover:text-[var(--primary-600)] cursor-pointer"/>
         </button>
+        {!isMaximized && (
+            <button onClick={handleMaximize} aria-label="Minimize">
+              <Maximize2 size={20} className="transition-all duration-300 ease-out hover:scale-125 hover:text-[var(--primary-600)] cursor-pointer"/>
+            </button>
+        )}
+        {isMaximized && (
+            <button onClick={handleMaximize} aria-label="Minimize">
+              <Minimize2 size={20} className="transition-all duration-300 ease-out hover:scale-125 hover:text-[var(--primary-600)] cursor-pointer"/>
+            </button>
+        )}
         <button onClick={handleClose} aria-label="Close"
         >
           <X size={20} className="transition-all duration-300 ease-out hover:scale-125 hover:text-[var(--primary-600)] cursor-pointer"/>

@@ -15,16 +15,13 @@ mod sounds;
 
 static SOUND_LIST: OnceLock<Mutex<utils::sound_stream::SoundList>> = OnceLock::new();
 
-
 fn init_sounds() {
     let mut list = Vec::new();
     list.push(utils::sound_stream::SoundStream {
-        effects: vec![
-            SoundEffect {
-                player: None,
-                path: "sounds/rain/thunder".to_string(),
-            }
-        ],
+        effect: SoundEffect {
+            player: None,
+            path: "sounds/rain/effects".to_string(),
+        },
         handle: None,
         player: None,
         play: Arc::new(AtomicBool::new(false)),

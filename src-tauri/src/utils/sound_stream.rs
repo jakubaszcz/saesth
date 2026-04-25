@@ -12,7 +12,7 @@ pub struct SoundData {
 
 pub struct SoundStream {
 
-    pub effects: Vec<SoundEffect>,
+    pub effect: SoundEffect,
 
     pub handle: Option<MixerDeviceSink>,
     pub player: Option<Arc<Mutex<Player>>>,

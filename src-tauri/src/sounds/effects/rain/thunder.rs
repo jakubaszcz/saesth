@@ -15,7 +15,7 @@ pub fn thunder(sound: &mut SoundStream) {
     let drift_volume = sound.drift_volume.clone();
     let fade_volume = sound.fade_volume.clone();
 
-    let Some(effect) = sound.effects.get(0).cloned() else {
+    let effect = sound.effect.clone() else {
         return;
     };
 

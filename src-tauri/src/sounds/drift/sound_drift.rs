@@ -21,6 +21,12 @@ pub(crate) fn song_drift(sound: &mut crate::utils::sound_stream::SoundStream) {
         return;
     };
 
+    let min = 10;
+    let max = 60;
+
+    let min_bonus = 0.85;
+    let max_bonus = 1.35;
+
     thread::spawn(move || {
         let mut rng = rand::rng();
 
@@ -38,7 +44,7 @@ pub(crate) fn song_drift(sound: &mut crate::utils::sound_stream::SoundStream) {
                 Err(_) => return,
             };
 
-            let target_drift = rng.random_range(0.85..1.15);
+            let target_drift = rng.random_range(min_bonus..max_bonus);
 
             let steps = DRIFT_DURATION_MS / DRIFT_STEP_MS;
 

@@ -26,8 +26,15 @@ pub fn thunder(sound: &mut SoundStream) {
     let mixer = handle.mixer().clone();
 
     thread::spawn(move || {
+
+        let min = 5;
+        let max = 20;
+
+        let min_bonus = 0.2;
+        let max_bonus = 0.6;
+
         while play_flag.load(Ordering::Relaxed) {
-            let wait = rand::rng().random_range(10..100);
+            let wait = rand::rng().random_range(min..max);
             thread::sleep(Duration::from_secs(wait));
 
             if !play_flag.load(Ordering::Relaxed) {
@@ -46,7 +53,7 @@ pub fn thunder(sound: &mut SoundStream) {
 
             let player = Player::connect_new(&mixer);
 
-            let bonus = rand::rng().random_range(0.1..0.6);
+            let bonus = rand::rng().random_range(min_bonus..max_bonus);
             let user = *user_volume.lock().unwrap();
             let fade = *fade_volume.lock().unwrap();
             let drift = *drift_volume.lock().unwrap();
